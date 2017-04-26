@@ -184,7 +184,7 @@ module.exports = class extends Generator {
         // Set the genFilePath path
         self.genFilePath = self.destinationPath(handlerPath);
         // Generate the route template obj.
-        route = this._routeGen(path, pathObj);
+        route = self._routeGen(path, pathObj);
 
         if (route.operations && route.operations.length > 0) {
           self.fs.copyTpl(
@@ -209,7 +209,7 @@ module.exports = class extends Generator {
         // Set the genFilePath path
         self.genFilePath = self.destinationPath(dataPath);
         // Generate the route template obj.
-        route = this._routeGen(path, pathObj);
+        route = self._routeGen(path, pathObj);
         // Generate the data files.
         if (route.operations && route.operations.length > 0) {
           self.fs.copyTpl(
