@@ -28,8 +28,9 @@
     },
     "scripts": {
         "start": "node server.js",
-        "test": "tape 'tests/**/*.js'",
-        "cover": "istanbul cover tape -- 'tests/**/*.js'",
+        "test": "tape 'modules/**/tests/**/*.js'",
+        "dredd": "dredd",
+        "cover": "istanbul cover tape -- 'modules/tests/**/*.js'",
         "lint": "eslint ."
     },
     "main": "./server"
