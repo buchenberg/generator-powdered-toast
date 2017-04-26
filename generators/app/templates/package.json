@@ -31,7 +31,8 @@
         "test": "tape 'modules/**/tests/**/*.js'",
         "dredd": "dredd",
         "cover": "istanbul cover tape -- 'modules/tests/**/*.js'",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "regenerate": "yo powdered-toast --specPath '<%= specPathRel.replace(/\\/g,'/') %>'"
     },
     "main": "./server"
 }
