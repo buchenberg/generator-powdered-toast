@@ -3,12 +3,20 @@ const Generator = require('yeoman-generator');
 const chalk = require('chalk');
 const yosay = require('yosay');
 const pem = require('pem');
-const Util = require('../../lib/util');
-const routeGen = require('../../lib/routegen');
 const JsYaml = require('js-yaml');
 const Path = require('path');
 const Parser = require('swagger-parser');
 const Pkg = require('../../package.json');
+
+const operationType = [
+  'get',
+  'post',
+  'put',
+  'delete',
+  'head',
+  'options',
+  'patch'
+];
 
 module.exports = class extends Generator {
 
@@ -21,9 +29,91 @@ module.exports = class extends Generator {
     this.argument('securityPath', {type: String, required: false});
   }
 
+  _startsWith(str, substr) {
+    if (str.substr(0, substr.length) === substr) {
+      return true;
+    }
+    return false;
+  }
+
+  _buildRelativePath(from, to) {
+    var dirname = Path.dirname(from);
+    var relative = Path.relative(dirname, to);
+    if (this._startsWith(relative, '.' + Path.sep) || this._startsWith(relative, '..' + Path.sep)) {
+      return relative;
+    }
+    return '.' + Path.sep + relative;
+  }
+
+  _routeGen(path, pathObj) {
+    var pathStr = path.replace(/^\/|\/$/g, '');
+    var mockgenPath = Path.join(this.dataPath, 'mockgen.js');
+    var dataPath = Path.join(this.dataPath, pathStr + '.js');
+    var route = {
+      basePath: (this.api.basePath && this.api.basePath !== '/') ? this.api.basePath : '',
+      path: path,
+      apiPathRel: this._buildRelativePath(this.genFilePath, this.apiConfigPath),
+      mockgenPath: this._buildRelativePath(this.genFilePath, this.destinationPath(mockgenPath)),
+      dataPath: this._buildRelativePath(this.genFilePath, this.destinationPath(dataPath)),
+      handlerDir: this._buildRelativePath(this.genFilePath, this.destinationPath(this.handlerPath)),
+      operations: [],
+      security: this.security,
+      securityPath: this._buildRelativePath(this.genFilePath, this.destinationPath(this.securityPath))
+    };
+
+    Object.keys(pathObj).forEach(function (method) {
+      var commonParams = [];
+      var operationObj = pathObj[method];
+      method = method.toLowerCase();
+      if (method === 'parameters') {
+        /*
+         * A list of parameters that are applicable for all the operations described under this path.
+         * These parameters can be overridden at the operation level, but cannot be removed there.
+         * The list MUST NOT include duplicated parameters
+         */
+        commonParams = operationObj;
+      } else if (operationType.indexOf(method) !== -1) {
+        /*
+         * The operation for the Path. get, post. put etc.
+         */
+        var parameters = commonParams;
+        var validateResp = false;
+        var response;
+        var responses = operationObj.responses;
+        var respArr = responses ? Object.keys(responses) : [];
+        if (respArr.length > 0) {
+          // Sort the array to maintain the order of keys.
+          // Use the first response as the default response
+          response = respArr.sort()[0];
+          if (responses[response] && responses[response].schema) {
+            validateResp = true;
+          }
+        }
+        if (operationObj.parameters) {
+          parameters = commonParams.concat(operationObj.parameters);
+        }
+
+        route.operations.push({
+          name: operationObj.operationId,
+          description: operationObj.description,
+          summary: operationObj.summary,
+          method: method,
+          parameters: parameters && parameters.map(function (p) {
+            return p.name;
+          }).join(', '),
+          produces: operationObj.produces && operationObj.produces.join(', '),
+          responses: respArr,
+          response: response,
+          validateResp: validateResp
+        });
+      }
+    });
+    return route;
+  }
+
   _setDefaults() {
     var basePath = this.destinationRoot();
-    Util.updateConfigPath(this);
+    this._updateConfigPath();
     this.appName = Path.basename(basePath);
     this.handlerPath = this.options.handlerPath || '.' + Path.sep + 'modules' + Path.sep + 'mocks' + Path.sep + 'handlers';
     this.dataPath = this.options.dataPath || '.' + Path.sep + 'modules' + Path.sep + 'mocks' + Path.sep + 'data';
@@ -36,6 +126,18 @@ module.exports = class extends Generator {
       this.security = true;
     }
     this.generatorVersion = Pkg.version;
+  }
+
+  _updateConfigPath() {
+    var ext = '.json';
+    this.ymlApi = false;
+    if (this.specPath &&
+      (Path.extname(this.specPath) === '.yml' || Path.extname(this.specPath) === '.yaml')) {
+      ext = Path.extname(this.specPath);
+      this.ymlApi = true;
+    }
+    this.specPathRel = '.' + Path.sep + 'modules' + Path.sep + 'mocks' + Path.sep + 'config' + Path.sep + 'swagger' + ext;
+    this.apiConfigPath = this.options.apiConfigPath || Path.join(this.destinationPath(), this.specPathRel);
   }
 
   _makeKeys() {
@@ -82,7 +184,7 @@ module.exports = class extends Generator {
         // Set the genFilePath path
         self.genFilePath = self.destinationPath(handlerPath);
         // Generate the route template obj.
-        route = routeGen(self, path, pathObj);
+        route = this._routeGen(path, pathObj);
 
         if (route.operations && route.operations.length > 0) {
           self.fs.copyTpl(
@@ -107,7 +209,7 @@ module.exports = class extends Generator {
         // Set the genFilePath path
         self.genFilePath = self.destinationPath(dataPath);
         // Generate the route template obj.
-        route = routeGen(self, path, pathObj);
+        route = this._routeGen(path, pathObj);
         // Generate the data files.
         if (route.operations && route.operations.length > 0) {
           self.fs.copyTpl(
@@ -122,7 +224,7 @@ module.exports = class extends Generator {
 
   _mockgen() {
     var tmpl = {
-      apiConfigPath: Util.relative(this.destinationPath(this.mockgenPath), this.apiConfigPath)
+      apiConfigPath: this._buildRelativePath(this.destinationPath(this.mockgenPath), this.apiConfigPath)
     };
     this.fs.copyTpl(
       this.templatePath('mockgen.js'),
