@@ -347,6 +347,12 @@ module.exports = class extends Generator {
       this.destinationPath('.env'),
       this
     );
+    // README
+    this.fs.copyTpl(
+      this.templatePath('README.md'),
+      this.destinationPath('README.md'),
+      this
+    );
     // Dredd
     this.fs.copyTpl(
       this.templatePath('dredd.yml'),
