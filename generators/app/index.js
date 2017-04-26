@@ -347,6 +347,12 @@ module.exports = class extends Generator {
       this.destinationPath('.env'),
       this
     );
+    // Dredd
+    this.fs.copyTpl(
+      this.templatePath('dredd.yml'),
+      this.destinationPath('dredd.yml'),
+      this
+    );
     var apiContent;
     if (this.refApi) {
       this.log('ref API found');
