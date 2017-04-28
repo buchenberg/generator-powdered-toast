@@ -13,7 +13,7 @@
         "debug": "^2.6.0",
         "dotenv": "^4.0.0",
         "swaggerize-hapi": "^2.0.0-",
-        "swagmock": "~0.0.2"
+        "swagmock": "github:buchenberg/swagmock"
     },
     "devDependencies": {
         "dredd": "^3.4.3",
