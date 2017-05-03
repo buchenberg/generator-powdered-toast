@@ -264,7 +264,7 @@ module.exports = class extends Generator {
         done(error);
       }
       self.api = api;
-      Parser.parse(api, function (error, refApi) {
+      Parser.parse(apiPath, function (error, refApi) {
         if (error) {
           self.log('Swagger parsing failed!');
           done(error);
