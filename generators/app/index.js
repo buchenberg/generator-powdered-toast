@@ -18,7 +18,10 @@ const operationType = [
   'patch'
 ];
 
+
+
 module.exports = class extends Generator {
+
 
   constructor(args, opts) {
     super(args, opts);
@@ -326,6 +329,8 @@ module.exports = class extends Generator {
 
   configuring() {
     if (this.props.specPath) {
+      this.specPath = this.props.specPath;
+      this._updateConfigPath();
       this._validateApi(this.props.specPath);
     }
   }
