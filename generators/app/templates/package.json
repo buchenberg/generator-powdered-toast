@@ -2,23 +2,25 @@
     "name": "<%= props.project_name %>",
     "description": "",
     "version": "1.0.0",
-    "author": "<%= props.developer_name %> <<%= props.developer_email %>>",
+    "author": "<%= props.developer_name %> <%= props.developer_email %>",
     "dependencies": {
         "glue": "^4.1.0",
-        "hapi": "^16.1.0",
+        "hapi": "^16.1.1",<% if (props.proxy_enabled) { %>
+        "h2o2": "^5.4.0",
+        "powdered-toast-proxy": "file:modules/powdered-toast-proxy",<% } %>
         "hapi-swaggered-ui": "^2.6.0",
         "inert": "^4.1.0",
         "vision": "^4.1.1",
         "blipp": "^2.3.0",
         "debug": "^2.6.0",
         "dotenv": "^4.0.0",
-        "swaggerize-hapi": "^2.0.0-",
+        "swaggerize-hapi": "^2.0.1",
         "swagmock": "github:buchenberg/swagmock"
     },
     "devDependencies": {
         "dredd": "^3.4.3",
         "generator-powdered-toast": "^1.0.0",
-        "eslint": "^2",
+        "eslint": "^3.19.0",
         "istanbul": "~0.4.3",
         "is-my-json-valid": "^2.13.1",
         "js-yaml": "^3.2.6",
