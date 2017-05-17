@@ -3,23 +3,19 @@
 
 ## About
 
-### Swagger based Mock API
+Generator-powdered-toast uses [Yeoman](http://yeoman.io) to generate a mock server based on a [Swagger](http://swagger.io/) specification. This is useful for front-end development when you have a swagger specification of an API that is being actively developed. No more waiting for the API developers to deploy to a development server. Get started building your boss UX right away.
 
-Generator-powdered-toast uses [Yeoman](http://yeoman.io) to generate a mock server based on a [Swagger](http://swagger.io/) specification. This is useful for front-end development when you have a swagger specification of an API that is being actively developed. No more waiting for the API developers to deploy to a development server. Get started building your boss UX right away. 
+Have a production or development API that is being changed? You can seemlessly proxy requests not specified in the Swagger to those upstream services by adding an optional proxy.
 
 The powdered-toast server uses the following technolgy stack:
 
-* [hapi.js](https://hapijs.com/) - A badass REST server from the ninjas at Walmart.com.
+* [hapi.js](https://hapijs.com/) - A badass Node.js REST server from the ninjas at Walmart.com.
 * A fork of [Swagmock](https://www.npmjs.com/package/swagmock) - A Swagger based mocking library.
 * [swaggerize-hapi](https://github.com/krakenjs/swaggerize-hapi) - A Swagger based hapi.js plugin.
 * [hapi-swaggered-ui](https://github.com/z0mt3c/hapi-swaggered-ui) - A Swagger UI implementation for hapi.js.
 * [h2o2](https://github.com/hapijs/h2o2) - A proxy handler plugin for hapi.js.
 
-### Proxy
-
-Have a production or development API that is being changed? You can seemlessly proxy requests not specified in the Swagger to those upstream services by adding an optional proxy.
-
-## Using the Generator
+## Making Powdered Toast
 
 Make sure you have pre-installed [node.js](https://nodejs.org/), [npm](https://www.npmjs.com/), and [Yarn](https://yarnpkg.com/en/).
 Install [Yeoman](http://yeoman.io) and generator-powdered-toast globally using npm.
@@ -35,7 +31,7 @@ Then generate your project.
 yo powdered-toast
 ```
 
-## Running Your Shiny New Project
+## Running Your Shiny New Powdered Toast
 
 Issue the following command to start the powdered-toast service locally.
 
@@ -125,13 +121,6 @@ Powdered-toast includes Dredd to test your API. To run Dredd tests just run the 
 ```
 npm run dredd
 ```
-
-## Getting To Know Yeoman
-
- * Yeoman has a heart of gold.
- * Yeoman is a person with feelings and opinions, but is very easy to work with.
- * Yeoman can be too opinionated at times but is easily convinced not to be.
- * Feel free to [learn more about Yeoman](http://yeoman.io/).
 
 ## License
 
