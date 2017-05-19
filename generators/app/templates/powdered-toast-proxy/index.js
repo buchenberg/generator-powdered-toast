@@ -19,7 +19,7 @@ exports.register = function (server, options, next) {
             passThrough: true,
             mapUri: function (request, callback) {
                 const upstreamUrl = `${options.upstream_protocol}://${options.upstream_host}${request.raw.req.url}`
-                <% if (props.proxy_host_override_enabled) { %>
+                <% if (props.proxyHostOverrideEnabled) { %>
                 request.headers.host = options.proxy_header_host || request.headers.host;
                 <% } %>
                 debug(`Request to ${upstreamUrl}`);

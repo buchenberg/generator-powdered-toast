@@ -1,4 +1,4 @@
-# <%= props.project_name %>
+# <%= props.projectName %>
 
 Powdered Toast Mock Server
 

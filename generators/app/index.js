@@ -18,18 +18,15 @@ const operationType = [
   'patch'
 ];
 
-
-
 module.exports = class extends Generator {
-
 
   constructor(args, opts) {
     super(args, opts);
-    this.argument('appname', { type: String, required: false });
-    this.argument('specPath', { type: String, required: false });
-    this.argument('handlerPath', { type: String, required: false });
-    this.argument('dataPath', { type: String, required: false });
-    this.argument('securityPath', { type: String, required: false });
+    this.argument('appname', {type: String, required: false});
+    this.argument('specPath', {type: String, required: false});
+    this.argument('handlerPath', {type: String, required: false});
+    this.argument('dataPath', {type: String, required: false});
+    this.argument('securityPath', {type: String, required: false});
   }
 
   _startsWith(str, substr) {
@@ -146,7 +143,7 @@ module.exports = class extends Generator {
   _makeKeys() {
     this.log('Making self-signed keys for TLS...');
     var self = this;
-    pem.createCertificate({ days: 365, selfSigned: true }, function (err, keys) {
+    pem.createCertificate({days: 365, selfSigned: true}, function (err, keys) {
       if (err) {
         return self.log(err);
       }
@@ -290,17 +287,17 @@ module.exports = class extends Generator {
     ));
     const prompts = [{
       type: 'input',
-      name: 'project_name',
+      name: 'projectName',
       message: 'Your project name',
       default: this.options.appname || this.appname
     }, {
       type: 'input',
-      name: 'developer_name',
+      name: 'developerName',
       message: 'Your name',
       save: true
     }, {
       type: 'input',
-      name: 'developer_email',
+      name: 'developerEmail',
       message: 'Your email',
       save: true
     },
@@ -313,57 +310,56 @@ module.exports = class extends Generator {
     },
     {
       type: 'confirm',
-      name: 'tls_enabled',
+      name: 'tlsEnabled',
       message: 'Would you like to enable TLS?'
     },
     {
       when: function (response) {
-        return response.tls_enabled;
+        return response.tlsEnabled;
       },
       type: 'confirm',
-      name: 'make_keys',
+      name: 'makeKeys',
       message: 'Would you like to generate SSL keys?'
     },
     {
       type: 'confirm',
-      name: 'proxy_enabled',
+      name: 'proxyEnabled',
       message: 'Would you like to add a proxy?'
     },
     {
       when: function (response) {
-        return response.proxy_enabled;
+        return response.proxyEnabled;
       },
       type: 'list',
-      name: 'proxy_upstream_protocol',
+      name: 'proxyUpstreamProtocol',
       message: 'What is the upstream host protocol?',
       choices: ['http', 'https'],
       default: 'http'
     },
     {
       when: function (response) {
-        return response.proxy_enabled;
+        return response.proxyEnabled;
       },
-      name: 'proxy_upstream_host',
+      name: 'proxyUpstreamHost',
       message: 'What is the upstream host?',
       default: 'api.example.com'
     },
-    { 
+    {
       when: function (response) {
-        return response.proxy_enabled;
+        return response.proxyEnabled;
       },
       type: 'confirm',
-      name: 'proxy_host_override_enabled',
+      name: 'proxyHostOverrideEnabled',
       message: 'Would you like to override the host header sent by the proxy?'
     },
     {
       when: function (response) {
-        return response.proxy_host_override_enabled;
+        return response.proxyHostOverrideEnabled;
       },
       name: 'proxy_header_host',
       message: 'What would you like to send in the host header?',
       default: 'client.example.com'
     }];
-
 
     return this.prompt(prompts).then(props => {
       this.props = props;
@@ -426,13 +422,13 @@ module.exports = class extends Generator {
       this.destinationPath('server.js'),
       this
     );
-    if (this.props.proxy_enabled) {
+    if (this.props.proxyEnabled) {
       this.fs.copyTpl(
         this.templatePath('powdered-toast-proxy/*'),
         this.destinationPath('modules/powdered-toast-proxy'),
         this
       );
-    };
+    }
     this._handlers();
     this._security();
     this._mockgen();
@@ -440,7 +436,7 @@ module.exports = class extends Generator {
   }
 
   install() {
-    if (this.props.make_keys) {
+    if (this.props.makeKeys) {
       this._makeKeys();
     }
     this.yarnInstall();

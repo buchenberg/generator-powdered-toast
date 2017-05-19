@@ -8,7 +8,7 @@ const chalk = require('chalk');
 
 let tls = false;
 
-<% if (props.tls_enabled) { %>
+<% if (props.tlsEnabled) { %>
 if (process.env.TLS_ENABLED === 'true') {
     tls = {
         key: fs.readFileSync(Path.resolve('./key.pem')),
@@ -19,7 +19,7 @@ if (process.env.TLS_ENABLED === 'true') {
 }
 <% } %>
 
-<% if (!props.tls_enabled) { %>
+<% if (!props.tlsEnabled) { %>
 // if (process.env.TLS_ENABLED === 'true') {
 //     tls = {
 //         key: fs.readFileSync(Path.resolve('./key.pem')),
@@ -43,11 +43,11 @@ const environment = {
     },
     ws: {
         port: process.env.WS_PORT || 9991
-    }<% if (props.proxy_enabled) { %>,
+    }<% if (props.proxyEnabled) { %>,
     proxy: {
         upstream_host: process.env.PROXY_UPSTREAM_HOST,
         upstream_protocol: process.env.PROXY_UPSTREAM_PROTOCOL,
-        header_host: process.env.PROXY_HEADER_HOST<% if (props.proxy_host_override_enabled) { %>,
+        header_host: process.env.PROXY_HEADER_HOST<% if (props.proxyHostOverrideEnabled) { %>,
         header_host: process.env.PROXY_HEADER_HOST<% } %>
         }<% } %>
         
@@ -78,7 +78,7 @@ const manifest = {
         },
         {
             plugin: 'blipp'
-        },<% if (props.proxy_enabled) { %>
+        },<% if (props.proxyEnabled) { %>
         {
             plugin: 'h2o2'
         },
@@ -87,7 +87,7 @@ const manifest = {
                 register: './modules/proxy',
                 options: {
                     upstream_protocol: environment.proxy.upstream_protocol,
-                    upstream_host: environment.proxy.upstream_host<% if (props.proxy_host_override_enabled) { %>,
+                    upstream_host: environment.proxy.upstream_host<% if (props.proxyHostOverrideEnabled) { %>,
                     proxy_header_host: environment.proxy.header_host<% } %>
                 }
             }

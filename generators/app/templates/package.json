@@ -1,11 +1,11 @@
 {
-    "name": "<%= props.project_name %>",
+    "name": "<%= props.projectName %>",
     "description": "",
     "version": "1.0.0",
-    "author": "<%= props.developer_name %> <%= props.developer_email %>",
+    "author": "<%= props.developerName %> <%= props.developerEmail %>",
     "dependencies": {
         "glue": "^4.1.0",
-        "hapi": "^16.1.1",<% if (props.proxy_enabled) { %>
+        "hapi": "^16.1.1",<% if (props.proxyEnabled) { %>
         "h2o2": "^5.4.0",
         "powdered-toast-proxy": "file:modules/powdered-toast-proxy",<% } %>
         "hapi-swaggered-ui": "^2.6.0",
@@ -30,7 +30,7 @@
     },
     "scripts": {
         "start": "node server.js",
-        "test": "tape 'modules/**/tests/**/*.js'",
+        "test": "npm run dredd",
         "dredd": "dredd",
         "cover": "istanbul cover tape -- 'modules/tests/**/*.js'",
         "lint": "eslint .",
