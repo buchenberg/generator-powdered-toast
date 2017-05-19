@@ -25,11 +25,11 @@ module.exports = class extends Generator {
 
   constructor(args, opts) {
     super(args, opts);
-    this.argument('appname', {type: String, required: false});
-    this.argument('specPath', {type: String, required: false});
-    this.argument('handlerPath', {type: String, required: false});
-    this.argument('dataPath', {type: String, required: false});
-    this.argument('securityPath', {type: String, required: false});
+    this.argument('appname', { type: String, required: false });
+    this.argument('specPath', { type: String, required: false });
+    this.argument('handlerPath', { type: String, required: false });
+    this.argument('dataPath', { type: String, required: false });
+    this.argument('securityPath', { type: String, required: false });
   }
 
   _startsWith(str, substr) {
@@ -124,8 +124,8 @@ module.exports = class extends Generator {
     this.securityPath = this.options.securityPath || '.' + Path.sep + 'security';
     this.security = false;
     if (this.api &&
-        this.api.securityDefinitions &&
-        Object.keys(this.api.securityDefinitions).length > 0) {
+      this.api.securityDefinitions &&
+      Object.keys(this.api.securityDefinitions).length > 0) {
       this.security = true;
     }
     this.generatorVersion = Pkg.version;
@@ -146,7 +146,7 @@ module.exports = class extends Generator {
   _makeKeys() {
     this.log('Making self-signed keys for TLS...');
     var self = this;
-    pem.createCertificate({days: 365, selfSigned: true}, function (err, keys) {
+    pem.createCertificate({ days: 365, selfSigned: true }, function (err, keys) {
       if (err) {
         return self.log(err);
       }
@@ -191,7 +191,7 @@ module.exports = class extends Generator {
 
         if (route.operations && route.operations.length > 0) {
           self.fs.copyTpl(
-            self.templatePath('handler.js'),
+            self.templatePath('mocks/handler.js'),
             self.genFilePath,
             route
           );
@@ -216,7 +216,7 @@ module.exports = class extends Generator {
         // Generate the data files.
         if (route.operations && route.operations.length > 0) {
           self.fs.copyTpl(
-            self.templatePath('data.js'),
+            self.templatePath('mocks/data.js'),
             self.genFilePath,
             route
           );
@@ -230,7 +230,7 @@ module.exports = class extends Generator {
       apiConfigPath: this._buildRelativePath(this.destinationPath(this.mockgenPath), this.apiConfigPath)
     };
     this.fs.copyTpl(
-      this.templatePath('mockgen.js'),
+      this.templatePath('mocks/mockgen.js'),
       this.destinationPath(this.mockgenPath),
       tmpl
     );
@@ -245,7 +245,7 @@ module.exports = class extends Generator {
       Object.keys(def).forEach(function (defName) {
         securityPath = Path.join(self.securityPath, defName + '.js');
         self.fs.copyTpl(
-          self.templatePath('security.js'),
+          self.templatePath('mocks/security.js'),
           self.destinationPath(securityPath),
           {
             name: defName,
@@ -317,10 +317,53 @@ module.exports = class extends Generator {
       message: 'Would you like to enable TLS?'
     },
     {
+      when: function (response) {
+        return response.tls_enabled;
+      },
       type: 'confirm',
       name: 'make_keys',
       message: 'Would you like to generate SSL keys?'
+    },
+    {
+      type: 'confirm',
+      name: 'proxy_enabled',
+      message: 'Would you like to add a proxy?'
+    },
+    {
+      when: function (response) {
+        return response.proxy_enabled;
+      },
+      type: 'list',
+      name: 'proxy_upstream_protocol',
+      message: 'What is the upstream host protocol?',
+      choices: ['http', 'https'],
+      default: 'http'
+    },
+    {
+      when: function (response) {
+        return response.proxy_enabled;
+      },
+      name: 'proxy_upstream_host',
+      message: 'What is the upstream host?',
+      default: 'api.example.com'
+    },
+    { 
+      when: function (response) {
+        return response.proxy_enabled;
+      },
+      type: 'confirm',
+      name: 'proxy_host_override_enabled',
+      message: 'Would you like to override the host header sent by the proxy?'
+    },
+    {
+      when: function (response) {
+        return response.proxy_host_override_enabled;
+      },
+      name: 'proxy_header_host',
+      message: 'What would you like to send in the host header?',
+      default: 'client.example.com'
     }];
+
 
     return this.prompt(prompts).then(props => {
       this.props = props;
@@ -383,6 +426,13 @@ module.exports = class extends Generator {
       this.destinationPath('server.js'),
       this
     );
+    if (this.props.proxy_enabled) {
+      this.fs.copyTpl(
+        this.templatePath('powdered-toast-proxy/*'),
+        this.destinationPath('modules/powdered-toast-proxy'),
+        this
+      );
+    };
     this._handlers();
     this._security();
     this._mockgen();
