@@ -7,7 +7,7 @@
         "glue": "^4.1.0",
         "hapi": "^16.1.1",<% if (props.proxyEnabled) { %>
         "h2o2": "^5.4.0",
-        "powdered-toast-proxy": "file:modules/powdered-toast-proxy",<% } %>
+        "powdered-toast-proxy": "file:modules/proxy",<% } %>
         "hapi-swaggered-ui": "^2.6.0",
         "inert": "^4.1.0",
         "vision": "^4.1.1",

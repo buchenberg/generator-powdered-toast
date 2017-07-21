@@ -424,8 +424,8 @@ module.exports = class extends Generator {
     );
     if (this.props.proxyEnabled) {
       this.fs.copyTpl(
-        this.templatePath('powdered-toast-proxy/*'),
-        this.destinationPath('modules/powdered-toast-proxy'),
+        this.templatePath('proxy/*'),
+        this.destinationPath('modules/proxy'),
         this
       );
     }
